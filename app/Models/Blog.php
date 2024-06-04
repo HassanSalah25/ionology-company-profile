@@ -10,11 +10,7 @@ class Blog extends Model
 
     public $translatable = ['title', 'content'];
 
-    protected $fillable = ['title', 'content', 'author_id'];
+    protected $fillable = ['title', 'content', 'image'];
 
-    public function author()
-    {
-        return $this->belongsTo(User::class, 'author_id');
-    }
 }
 

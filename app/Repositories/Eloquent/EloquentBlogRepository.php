@@ -2,6 +2,7 @@
 namespace App\Repositories\Eloquent;
 
 use App\Models\Blog;
+use App\Models\Category;
 use App\Repositories\Contracts\BlogRepositoryInterface;
 
 class EloquentBlogRepository implements BlogRepositoryInterface
@@ -46,5 +47,31 @@ class EloquentBlogRepository implements BlogRepositoryInterface
             return true;
         }
         return false;
+    }
+
+    public function filter(array $filters)
+    {
+        $query = Blog::query();
+
+        if (isset($filters['title'])) {
+            $query->where('title', 'like', '%' . $filters['title'] . '%');
+        }
+
+        if (isset($filters['created_at'])) {
+            $query->whereDate('created_at', $filters['created_at']);
+        }
+
+        if (isset($filters['category_id'])) {
+            $query->whereHas('categories', function ($q) use ($filters) {
+                $q->where('id', $filters['category_id']);
+            });
+        }
+
+        return $query->get();
+    }
+
+    public function getAllCategories()
+    {
+        return Category::where('type',2)->get();
     }
 }
