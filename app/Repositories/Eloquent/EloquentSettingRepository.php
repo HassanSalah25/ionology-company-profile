@@ -28,14 +28,9 @@ class EloquentSettingRepository implements SettingRepositoryInterface
         return $this->model->create($data);
     }
 
-    public function update($id, array $data)
+    public function update($key, $value)
     {
-        $setting = $this->model->find($id);
-        if ($setting) {
-            $setting->update($data);
-            return $setting;
-        }
-        return null;
+        Setting::where('key', $key)->update(['value' => $value]);
     }
 
     public function delete($id)
@@ -46,5 +41,12 @@ class EloquentSettingRepository implements SettingRepositoryInterface
             return true;
         }
         return false;
+    }
+
+    public function mergeValueType($name, $options)
+    {
+        $data['name'] = $name;
+        $data['options'] = $options;
+        return json_encode($data);
     }
 }

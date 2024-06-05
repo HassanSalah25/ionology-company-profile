@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('key')->unique();
             $table->text('value');
+            $table->json('value_type');
             $table->timestamps();
         });
     }
