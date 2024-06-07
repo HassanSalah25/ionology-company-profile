@@ -47,4 +47,18 @@ class EloquentUserRepository implements UserRepositoryInterface
         }
         return false;
     }
+    public function filter(array $filters = [])
+    {
+        $query = User::query();
+        if (isset($filters['name'])) {
+            $query->where('name', 'like', '%' . $filters['name'] . '%');
+        }
+
+        if (isset($filters['email'])) {
+            $query->where('email', 'like', '%' . $filters['email'] . '%');
+        }
+
+
+        return $query->get();
+    }
 }

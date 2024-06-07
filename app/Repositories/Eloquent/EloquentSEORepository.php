@@ -1,14 +1,14 @@
 <?php
 namespace App\Repositories\Eloquent;
 
-use App\Models\Seo;
+use App\Models\SEO;
 use App\Repositories\Contracts\SEORepositoryInterface;
 
 class EloquentSEORepository implements SEORepositoryInterface
 {
     protected $model;
 
-    public function __construct(Seo $seo)
+    public function __construct(SEO $seo)
     {
         $this->model = $seo;
     }

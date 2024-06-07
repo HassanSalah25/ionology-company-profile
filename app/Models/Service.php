@@ -2,15 +2,17 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Translatable\HasTranslations;
 
-class Service extends Model
+class Service extends Model implements HasMedia
 {
-    use HasTranslations;
+    use HasTranslations, InteractsWithMedia;
 
     public $translatable = ['name', 'description'];
 
-    protected $fillable = ['name', 'description', 'category_id'];
+    protected $fillable = ['name', 'description', 'category_id', 'image', 'images'];
 
     public function category()
     {

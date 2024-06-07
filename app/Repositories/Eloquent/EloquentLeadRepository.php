@@ -47,4 +47,27 @@ class EloquentLeadRepository implements LeadRepositoryInterface
         }
         return false;
     }
+
+    public function filter(array $filters = [])
+    {
+        $query = Lead::query();
+
+        if (isset($filters['name'])) {
+            $query->where('name', 'like', '%' . $filters['name'] . '%');
+        }
+
+        if (isset($filters['message'])) {
+            $query->where('message', 'like', '%' . $filters['message'] . '%');
+        }
+
+        if (isset($filters['phone'])) {
+            $query->where('phone', 'like', '%' . $filters['phone'] . '%');
+        }
+
+        if (isset($filters['email'])) {
+            $query->where('email', 'like', '%' . $filters['email'] . '%');
+        }
+
+        return $query->get();
+    }
 }

@@ -1,6 +1,7 @@
 <?php
 namespace App\Repositories\Eloquent;
 
+use App\Enum\CategoryType;
 use App\Models\Blog;
 use App\Models\Category;
 use App\Repositories\Contracts\BlogRepositoryInterface;
@@ -72,6 +73,6 @@ class EloquentBlogRepository implements BlogRepositoryInterface
 
     public function getAllCategories()
     {
-        return Category::where('type',2)->get();
+        return Category::where('type',CategoryType::BLOG)->get();
     }
 }

@@ -56,8 +56,8 @@ class BlogController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
+            'title.ar' => 'required|string|max:255',
+            'content.ar' => 'required|string',
             'image' => 'required|image|max:2048'
             // Add more validation rules as needed
         ]);
@@ -95,8 +95,8 @@ class BlogController extends Controller
     public function update(Request $request, $id)
     {
         $data = $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
+            'title.ar' => 'required|string|max:255',
+            'content.ar' => 'required|string',
             'image' => 'nullable|image|max:2048', // Assuming maximum file size is 2MB (2048 KB)
             // Add more validation rules as needed
         ]);
@@ -131,7 +131,7 @@ class BlogController extends Controller
      * Remove the specified blog Image from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroyImage($id)
     {

@@ -1,6 +1,8 @@
 <?php
 namespace App\Repositories\Eloquent;
 
+use App\Enum\CategoryType;
+use App\Models\Category;
 use App\Models\Service;
 use App\Repositories\Contracts\ServiceRepositoryInterface;
 
@@ -46,5 +48,27 @@ class EloquentServiceRepository implements ServiceRepositoryInterface
             return true;
         }
         return false;
+    }
+
+    public function filter(array $filters)
+    {
+        $query = Service::query();
+
+        if (isset($filters['name'])) {
+            $query->whereTranslation('name', 'like', '%' . $filters['title'] . '%');
+        }
+
+        if (isset($filters['category_id'])) {
+            $query->whereHas('categories', function ($q) use ($filters) {
+                $q->where('id', $filters['category_id']);
+            });
+        }
+
+        return $query->get();
+    }
+
+    public function getAllCategories()
+    {
+        return Category::where('type',CategoryType::SERVICE)->get();
     }
 }

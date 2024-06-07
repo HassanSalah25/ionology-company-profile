@@ -47,4 +47,28 @@ class EloquentCategoryRepository implements CategoryRepositoryInterface
         }
         return false;
     }
+
+    public function filter(array $filters = [])
+    {
+        $query = Category::query();
+
+        if (isset($filters['name'])) {
+            $query->whereTranslation('name', 'like', '%' . $filters['name'] . '%');
+        }
+
+        if (isset($filters['description'])) {
+            $query->whereTranslation('description', 'like', '%' . $filters['description'] . '%');
+        }
+
+        if (isset($filters['type'])) {
+            $query->where('type',$filters['type']);
+        }
+
+        return $query->get();
+    }
+
+    public function getAllCategories()
+    {
+        return Category::all();
+    }
 }

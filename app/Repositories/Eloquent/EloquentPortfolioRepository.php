@@ -47,4 +47,19 @@ class EloquentPortfolioRepository implements PortfolioRepositoryInterface
         }
         return false;
     }
+
+    public function filter(array $filters = [])
+    {
+        $query = Portfolio::query();
+
+        if (isset($filters['title'])) {
+            $query->whereTranslation('title', 'like', '%' . $filters['title'] . '%');
+        }
+        //'description', 'address', 'phone', 'email'
+        if (isset($filters['description'])) {
+            $query->whereTranslation('description', 'like', '%' . $filters['description'] . '%');
+        }
+
+        return $query->get();
+    }
 }

@@ -2,6 +2,7 @@
 namespace App\Repositories\Eloquent;
 
 use App\Models\CompanyInfo;
+use App\Models\Service;
 use App\Repositories\Contracts\CompanyInfoRepositoryInterface;
 
 class EloquentCompanyInfoRepository implements CompanyInfoRepositoryInterface
@@ -46,5 +47,28 @@ class EloquentCompanyInfoRepository implements CompanyInfoRepositoryInterface
             return true;
         }
         return false;
+    }
+
+    public function filter(array $filters = [])
+    {
+        $query = Service::query();
+
+        if (isset($filters['name'])) {
+            $query->whereTranslation('name', 'like', '%' . $filters['name'] . '%');
+        }
+        //'description', 'address', 'phone', 'email'
+        if (isset($filters['description'])) {
+            $query->whereTranslation('description', 'like', '%' . $filters['description'] . '%');
+        }
+
+        if (isset($filters['phone'])) {
+            $query->where('phone', 'like', '%' . $filters['phone'] . '%');
+        }
+
+        if (isset($filters['email'])) {
+            $query->where('email', 'like', '%' . $filters['email'] . '%');
+        }
+
+        return $query->get();
     }
 }
