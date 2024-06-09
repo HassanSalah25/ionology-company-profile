@@ -34,4 +34,9 @@ class Category extends Model implements HasMedia
         }
         $this->attributes['type'] = $value;
     }
+
+    public function seo()
+    {
+        return $this->morphOne(SEO::class, 'seoable');
+    }
 }

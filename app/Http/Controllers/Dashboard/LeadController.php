@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Repositories\Eloquent\EloquentLeadRepository;
+use Illuminate\Http\Request;
 
 class LeadController extends Controller
 {
@@ -20,6 +21,6 @@ class LeadController extends Controller
         // Retrieve filtered leads from the repository
         $leads = $this->leadRepository->filter($request->only(['name', 'email', 'phone', 'message']));
 
-        return view('leads.index', compact('leads'));
+        return view('dashboard.leads.index', compact('leads'));
     }
 }

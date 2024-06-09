@@ -17,9 +17,10 @@ class SettingController extends Controller
 
     public function index()
     {
-        $settings = $this->settingsRepository->all();
-
-        return view('dashboard.settings.index', compact('settings'));
+        $data['settings'] = $this->settingsRepository->all();
+        $data['title'] = 'General Settings';
+        $data['parentPageTitle'] = 'Settings';
+        return view('dashboard.settings.index', $data);
     }
 
     public function update(Request $request)
@@ -50,5 +51,7 @@ class SettingController extends Controller
 
         return redirect()->route('settings.index')->with('success', 'Setting added successfully.');
     }
+
+
 
 }

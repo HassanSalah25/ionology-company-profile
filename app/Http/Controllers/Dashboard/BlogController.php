@@ -5,16 +5,19 @@ namespace App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Repositories\Eloquent\EloquentBlogRepository;
+use App\Sevices\SEOService;
 use Illuminate\Http\Request;
 
 class BlogController extends Controller
 {
     //
     protected $blogRepository;
+    protected $seoService;
 
-    public function __construct(EloquentBlogRepository $blogRepository)
+    public function __construct(EloquentBlogRepository $blogRepository, SEOService $seoService)
     {
         $this->blogRepository = $blogRepository;
+        $this->seoService = $seoService;
     }
 
     /**
@@ -67,6 +70,7 @@ class BlogController extends Controller
         // Add image to the media library
         $blog->addMedia($request->file('image'))->toMediaCollection('images');
 
+        $this->seoService->createOrUpdate($request, $blog);
 
         return redirect()->route('blogs.index')->with('success', 'Blog created successfully.');
     }
@@ -105,6 +109,9 @@ class BlogController extends Controller
 
         // Update blog attributes
         $blog->update($data);
+
+
+        $this->seoService->createOrUpdate($request, $blog);
 
         // If a new image is uploaded, add it to the media library
         if ($request->hasFile('image')) {

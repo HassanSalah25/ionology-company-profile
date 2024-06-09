@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('phone');
             $table->text('message')->nullable();
             $table->unsignedBigInteger('service_id');
+            $table->string('status');
+            $table->string('user_name');
             $table->timestamps();
         });
     }

@@ -2,6 +2,7 @@
 namespace App\Repositories\Eloquent;
 
 use App\Models\Portfolio;
+use App\Models\Service;
 use App\Repositories\Contracts\PortfolioRepositoryInterface;
 
 class EloquentPortfolioRepository implements PortfolioRepositoryInterface
@@ -61,5 +62,10 @@ class EloquentPortfolioRepository implements PortfolioRepositoryInterface
         }
 
         return $query->get();
+    }
+
+    public function getAllServices()
+    {
+        return Service::all();
     }
 }

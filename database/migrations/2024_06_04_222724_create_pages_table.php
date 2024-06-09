@@ -13,20 +13,14 @@ return new class extends Migration
     {
         Schema::create('pages', function (Blueprint $table) {
             $table->id();
-            $table->string('slug')->unique();
+            $table->json('slug')->unique();
+            $table->string('position');
+            $table->json('title');
+            $table->json('content');
             $table->timestamps();
         });
 
-        Schema::create('page_translations', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('page_id')->constrained()->onDelete('cascade');
-            $table->string('locale')->index();
-            $table->string('title');
-            $table->text('content');
-            $table->timestamps();
 
-            $table->unique(['page_id', 'locale']);
-        });
     }
 
     /**
@@ -34,6 +28,5 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('page_translations');
         Schema::dropIfExists('pages');    }
 };

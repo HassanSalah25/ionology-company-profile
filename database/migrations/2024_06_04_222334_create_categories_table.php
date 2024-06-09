@@ -17,19 +17,11 @@ return new class extends Migration
             $table->id();
             $table->string('image')->nullable();
             $table->string('type');
+            $table->json('name');
+            $table->json('description')->nullable();
             $table->timestamps();
         });
 
-        Schema::create('category_translations', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('category_id')->constrained()->onDelete('cascade');
-            $table->string('locale')->index();
-            $table->string('name');
-            $table->text('description')->nullable();
-            $table->timestamps();
-
-            $table->unique(['category_id', 'locale']);
-        });
     }
 
     /**
@@ -37,7 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('category_translations');
         Schema::dropIfExists('categories');
     }
 };

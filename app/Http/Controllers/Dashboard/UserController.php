@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Dashboard;
 
+use App\Enum\UserType;
 use App\Http\Controllers\Controller;
 use App\Repositories\Eloquent\EloquentUserRepository;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rules\Enum;
 
 class UserController extends Controller
 {
@@ -19,14 +21,17 @@ class UserController extends Controller
     public function index(Request $request)
     {
         // Retrieve filtered users from the repository
-        $users = $this->userRepository->filter($request->only(['name', 'email']));
-
-        return view('users.index', compact('users'));
+        $data['users'] = $this->userRepository->filter($request->only(['name', 'email']));
+        $data['title'] = 'All Users';
+        $data['parentPageTitle'] = 'Users';
+        return view('dashboard.users.index',$data);
     }
 
     public function create()
     {
-        return view('users.create');
+        $data['title'] = 'New User';
+        $data['parentPageTitle'] = 'Users';
+        return view('dashboard.users.create',$data);
     }
 
     public function store(Request $request)
@@ -34,23 +39,26 @@ class UserController extends Controller
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8',
-            'user_type' => 'required|string|in:admin,user',
+            'password' => 'required|confirmed|string|min:8',
+            'user_type' => ['required',new Enum(UserType::class)],
+            'role_id' => ['required']
         ]);
 
         $data['password'] = bcrypt($data['password']);
 
         $user = $this->userRepository->create($data);
 
-        return redirect()->route('users.index')->with('success', 'User created successfully.');
+        return redirect()->route('dashboard.users.index')->with('success', 'User created successfully.');
     }
 
 
     public function edit($id)
     {
-        $user = $this->userRepository->find($id);
+        $data['user'] = $this->userRepository->find($id);
 
-        return view('users.edit', compact('user'));
+        $data['title'] = 'Update User';
+        $data['parentPageTitle'] = 'Users';
+        return view('dashboard.users.edit', $data);
     }
 
     public function update(Request $request, $id)
@@ -58,7 +66,8 @@ class UserController extends Controller
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $id,
-            'user_type' => 'required|string|in:admin,user',
+            'user_type' => ['required',new Enum(UserType::class)],
+            'role_id' => ['required']
         ]);
 
         $user = $this->userRepository->find($id);
@@ -66,14 +75,33 @@ class UserController extends Controller
         // Update user attributes
         $user->update($data);
 
-        return redirect()->route('users.index')->with('success', 'User updated successfully.');
+        return redirect()->route('dashboard.users.index')->with('success', 'User updated successfully.');
     }
 
     public function destroy($id)
     {
         $this->userRepository->delete($id);
 
-        return redirect()->route('users.index')->with('success', 'User deleted successfully.');
+        return response()->json([
+            'status' => 'success',
+            'message' => 'User deleted successfully'
+        ], 200);
+    }
+
+    public function updatePassword(Request $request, $id)
+    {
+        $data = $request->validate([
+            'password' => 'required|confirmed|min:8|string'
+        ]);
+
+        $data['password'] = bcrypt($data['password']);
+
+        $user = $this->userRepository->find($id);
+
+        // Update user attributes
+        $user->update($data);
+
+        return redirect()->route('dashboard.users.index')->with('success', 'User updated successfully.');
     }
 
 

@@ -4,20 +4,26 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Repositories\Eloquent\EloquentServiceRepository;
+use App\Sevices\SEOService;
 use Illuminate\Http\Request;
 
 class ServiceController extends Controller
 {
     //
     protected $serviceRepository;
+    protected $seoService;
 
-    public function __construct(EloquentServiceRepository $serviceRepository)
+    public function __construct(EloquentServiceRepository $serviceRepository, SEOService $seoService)
     {
         $this->serviceRepository = $serviceRepository;
+        $this->seoService = $seoService;
     }
 
     public function index(Request $request)
     {
+        $data['title'] = 'All Services';
+        $data['parentPageTitle'] = 'Services';
+
         $filters = $request->only(['title', 'created_at', 'category_id']);
 
         // Retrieve filtered service posts from the repository
@@ -26,19 +32,22 @@ class ServiceController extends Controller
         // Get all categories to pass to the view
         $categories = $this->serviceRepository->getAllCategories();
 
-        return view('services.index', compact('services', 'filters', 'categories'));
+        return view('dashboard.services.index', $data, compact('services', 'filters', 'categories'));
     }
 
     /**
      * Show the form for creating a new service.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Foundation\Application|\Illuminate\View\View
      */
     public function create()
     {
         // Get all categories to pass to the view
         $categories = $this->serviceRepository->getAllCategories();
-        return view('services.create',compact('categories'));
+        $data['title'] = 'Create Services';
+        $data['parentPageTitle'] = 'Services';
+
+        return view('dashboard.services.create', $data, compact('categories'));
     }
 
     /**
@@ -49,17 +58,18 @@ class ServiceController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->validate([
+        $request->validate([
             'name.ar' => 'required|string|max:255',
             'description.ar' => 'required|string',
             'image' => 'required|image|max:2048',
             'images.*' => 'image|max:2048',
-            'category_id' => 'exists|categories,id'
+            'category_id' => 'exists:categories,id'
             // Add more validation rules as needed
         ]);
 
-        $service = $this->serviceRepository->create($data);
+        $service = $this->serviceRepository->create($request->all());
 
+        $this->seoService->createOrUpdate($request, $service);
         // Add image to the media library
         $service->addMedia($request->file('image'))->toMediaCollection('images');
 
@@ -68,21 +78,23 @@ class ServiceController extends Controller
                 $service->addMedia($image)->toMediaCollection('images');
         }
 
-        return redirect()->route('services.index')->with('success', 'Service created successfully.');
+        return redirect()->route('dashboard.services.index')->with('success', 'Service created successfully.');
     }
 
     /**
      * Show the form for editing the specified service.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Foundation\Application|\Illuminate\View\View
      */
     public function edit($id)
     {
+        $data['title'] = 'Edit Services';
+        $data['parentPageTitle'] = 'Services';
         $service = $this->serviceRepository->find($id);
         // Get all categories to pass to the view
         $categories = $this->serviceRepository->getAllCategories();
-        return view('services.edit', compact('service','categories'));
+        return view('dashboard.services.edit', $data, compact('service','categories'));
     }
 
     /**
@@ -107,6 +119,7 @@ class ServiceController extends Controller
 
         // Update service attributes
         $service->update($data);
+        $this->seoService->createOrUpdate($request, $service);
 
         // If a new image is uploaded, add it to the media library
         if ($request->hasFile('image')) {
@@ -119,7 +132,7 @@ class ServiceController extends Controller
                 $service->addMedia($image)->toMediaCollection('images');
         }
 
-        return redirect()->route('services.index')->with('success', 'Service updated successfully.');
+        return redirect()->route('dashboard.services.index')->with('success', 'Service updated successfully.');
     }
 
     /**
@@ -131,16 +144,20 @@ class ServiceController extends Controller
     public function destroy($id)
     {
         $this->serviceRepository->delete($id);
-        return redirect()->route('services.index')->with('success', 'Service deleted successfully.');
-    }
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Language deleted successfully'
+        ], 200);    }
+
 
     /**
-     * Remove the specified service Image from storage.
+     * Remove the specified blog Image from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\Response
      */
-    public function destroyImage($id)
+
+    public function removeImage($id)
     {
         $service = $this->serviceRepository->find($id);
 
@@ -152,5 +169,4 @@ class ServiceController extends Controller
             'message' => 'Image deleted successfully.'
         ]);
     }
-
 }

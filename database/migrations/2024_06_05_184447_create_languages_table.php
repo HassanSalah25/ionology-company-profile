@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('code');
             $table->string('flag');
+            $table->string('is_rtl')->nullable();
             $table->timestamps();
         });
     }

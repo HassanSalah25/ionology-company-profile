@@ -14,19 +14,12 @@ return new class extends Migration
         Schema::create('portfolios', function (Blueprint $table) {
             $table->id();
             $table->string('image_path')->nullable();
+            $table->json('title');
+            $table->json('description');
             $table->timestamps();
         });
 
-        Schema::create('portfolio_translations', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('portfolio_id')->constrained()->onDelete('cascade');
-            $table->string('locale')->index();
-            $table->string('title');
-            $table->text('description');
-            $table->timestamps();
 
-            $table->unique(['portfolio_id', 'locale']);
-        });
     }
 
     /**
@@ -34,6 +27,5 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('portfolio_translations');
         Schema::dropIfExists('portfolios');    }
 };

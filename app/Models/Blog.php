@@ -14,5 +14,9 @@ class Blog extends Model implements HasMedia
 
     protected $fillable = ['title', 'content', 'image'];
 
+    public function seo()
+    {
+        return $this->morphOne(SEO::class, 'seoable');
+    }
 }
 

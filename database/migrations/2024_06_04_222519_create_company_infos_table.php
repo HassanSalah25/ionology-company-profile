@@ -16,20 +16,13 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
             $table->string('image')->nullable();
+            $table->json('name');
+            $table->json('description')->nullable();
+            $table->json('address')->nullable();
             $table->timestamps();
         });
 
-        Schema::create('company_info_translations', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('company_info_id')->constrained()->onDelete('cascade');
-            $table->string('locale')->index();
-            $table->string('name');
-            $table->text('description')->nullable();
-            $table->string('address')->nullable();
-            $table->timestamps();
 
-            $table->unique(['company_info_id', 'locale']);
-        });
     }
 
     /**
@@ -37,6 +30,5 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('company_info_translations');
         Schema::dropIfExists('company_info');    }
 };

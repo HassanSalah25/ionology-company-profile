@@ -27,6 +27,7 @@ class EloquentServiceRepository implements ServiceRepositoryInterface
 
     public function create(array $data)
     {
+        $data['category_name'] = Category::find($data['category_id'])->name;
         return $this->model->create($data);
     }
 

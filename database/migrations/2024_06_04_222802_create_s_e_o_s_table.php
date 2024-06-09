@@ -11,16 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('seo', function (Blueprint $table) {
+        Schema::create('seos', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('seoable_id');
             $table->string('seoable_type');
-            $table->string('meta_title')->nullable();
-            $table->text('meta_description')->nullable();
-            $table->string('meta_keywords')->nullable();
-            $table->string('alt_image')->nullable();
+            $table->json('meta_title')->nullable();
+            $table->json('meta_description')->nullable();
+            $table->json('meta_keywords')->nullable();
+            $table->json('canonical')->nullable();
+            $table->json('alt_image')->nullable();
             $table->timestamps();
         });
+
     }
 
     /**
@@ -28,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('s_e_o_s');
+        Schema::dropIfExists('seos');
     }
 };
